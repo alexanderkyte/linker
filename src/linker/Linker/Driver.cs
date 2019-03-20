@@ -160,6 +160,7 @@ namespace Mono.Linker {
 				bool dumpDependencies = false;
 				bool ignoreDescriptors = false;
 				bool removeCAS = true;
+				var annotateAccesses = false;
 
 				bool resolver = false;
 				while (HaveMoreTokens ()) {
@@ -216,6 +217,10 @@ namespace Mono.Linker {
 								if (!excluded_features.Contains (feature))
 									excluded_features.Add (feature);
 							}
+							continue;
+
+						case "--annotate-method-access":
+							annotateAccesses = true;
 							continue;
 
 						case "--custom-step":
@@ -327,6 +332,9 @@ namespace Mono.Linker {
 
 				foreach (string custom_step in custom_steps)
 					AddCustomStep (p, custom_step);
+
+				if (annotateAccesses)
+					p.AddStepAfter (typeof (CodeRewriterStep), new AccessAnnotatorStep ());
 
 				p.AddStepAfter (typeof (LoadReferencesStep), new LoadI18nAssemblies (assemblies));
 

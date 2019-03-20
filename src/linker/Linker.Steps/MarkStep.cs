@@ -1660,6 +1660,11 @@ namespace Mono.Linker.Steps {
 				MarkMethod (method);
 		}
 
+		protected void MarkMethodReflected (MethodDefinition method)
+		{
+				Annotations.MarkReflected (method);
+		}
+
 		protected virtual MethodDefinition MarkMethod (MethodReference reference)
 		{
 			reference = GetOriginalMethod (reference);
@@ -2222,6 +2227,7 @@ namespace Mono.Linker.Steps {
 					Tracer.Push ($"Reflection-{method}");
 					try {
 						MarkMethod (method);
+						MarkMethodReflected(method);
 					} finally {
 						Tracer.Pop ();
 					}

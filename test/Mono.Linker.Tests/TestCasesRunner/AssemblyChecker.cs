@@ -494,7 +494,7 @@ namespace Mono.Linker.Tests.TestCasesRunner {
 			var linkedAttrs = FilterLinkedAttributes (linked).ToList ();
 
 			for (int i=0; i < linkedAttrs.Count; i++) {
-				if (linkedAttrs [i] == "Mono.Codegen/Reflected")
+				if (linkedAttrs [i] == "System.Runtime.CompilerServices.MethodImplAttribute")
 					linkedAttrs.RemoveAt (i);
 			}
 

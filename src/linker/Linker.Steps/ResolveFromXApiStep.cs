@@ -133,6 +133,7 @@ namespace Mono.Linker.Steps
 		void MarkMethod (MethodDefinition method)
 		{
 			InternalMark (method);
+			Annotations.MarkReflected (method);
 			Annotations.SetAction (method, MethodAction.Parse);
 		}
 	}
