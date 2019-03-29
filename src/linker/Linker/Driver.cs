@@ -160,7 +160,7 @@ namespace Mono.Linker {
 				bool dumpDependencies = false;
 				bool ignoreDescriptors = false;
 				bool removeCAS = true;
-				var annotateAccesses = false;
+				var annotateUnseenCallers = false;
 
 				bool resolver = false;
 				while (HaveMoreTokens ()) {
@@ -219,8 +219,8 @@ namespace Mono.Linker {
 							}
 							continue;
 
-						case "--annotate-method-access":
-							annotateAccesses = true;
+						case "--annotate-unseen-callers":
+							annotateUnseenCallers = true;
 							continue;
 
 						case "--custom-step":

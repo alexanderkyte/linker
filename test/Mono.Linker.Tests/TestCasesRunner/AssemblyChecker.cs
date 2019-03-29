@@ -493,11 +493,6 @@ namespace Mono.Linker.Tests.TestCasesRunner {
 			var expectedAttrs = GetExpectedAttributes (src).ToList ();
 			var linkedAttrs = FilterLinkedAttributes (linked).ToList ();
 
-			for (int i=0; i < linkedAttrs.Count; i++) {
-				if (linkedAttrs [i] == "System.Runtime.CompilerServices.MethodImplAttribute")
-					linkedAttrs.RemoveAt (i);
-			}
-
 			Assert.That (linkedAttrs, Is.EquivalentTo (expectedAttrs), $"Custom attributes on `{src}' are not matching");
 		}
 

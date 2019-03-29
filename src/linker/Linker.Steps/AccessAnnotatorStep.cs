@@ -37,9 +37,6 @@ namespace Mono.Linker.Steps {
 
 		void ProcessMethod (MethodDefinition method)
 		{
-			if (!Annotations.IsReflected (method))
-				return;
-
 			// Public methods have non-visible call sites by default, this attribute doesn't
 			// help us at all.
 			//
@@ -47,21 +44,46 @@ namespace Mono.Linker.Steps {
 			if (!method.IsPrivate)
 				return;
 
-			if (noOptAttr == null) {
-				var methodImpl = typeof (System.Runtime.CompilerServices.MethodImplAttribute);
-				var option = typeof(System.Runtime.CompilerServices.MethodImplOptions);
+			if (!Annotations.IsReflected(method))
+				return;
 
-				noOptAttrArg = (MethodImplOptions) Enum.Parse(option, "NoOptimization");
-				var reflectionMethod = methodImpl.GetConstructor (new Type[] { typeof (Int16) });
+			//if (noOptAttr == null) {
+			//	TypeDefinition methodImpl = BCL.FindPredefinedType ("System.Runtime.CompilerServices", "MethodImplAttribute", Context);
+			//	TypeDefinition option = BCL.FindPredefinedType ("System.Runtime.CompilerServices", "MethodImplOptions", Context);
+			//	TypeDefinition cecilInt16 = BCL.FindPredefinedType ("System", "Int16", Context);
 
-				noOptAttr = assembly.MainModule.ImportReference (reflectionMethod);
-				noOptAttrArgType = assembly.MainModule.ImportReference (typeof(Int16));
-			}
+			//	MethodDefinition reflectionMethod = null;
 
-			var reflectionAttr = new CustomAttribute (noOptAttr);
-			reflectionAttr.ConstructorArguments.Add (new CustomAttributeArgument (noOptAttrArgType, (Int16) noOptAttrArg));
+			//	foreach (var ref_method in methodImpl.Methods) {
+			//		Console.WriteLine("Checking {0} as an option for constructor", ref_method.FullName);
+			//		if (!ref_method.IsConstructor)
+			//			continue;
+			//		if (ref_method.Parameters.Count != 1)
+			//			continue;
+			//		if (ref_method.Parameters[0].ParameterType == cecilInt16) {
+			//			reflectionMethod = ref_method;
+			//			break;
+			//		}
+			//	}
 
-			method.CustomAttributes.Add (reflectionAttr);
+			//	if (reflectionMethod == null)
+			//		throw new Exception ("Could not find the Int16 constructor for MethodImplAttribute");
+
+			//	noOptAttr = assembly.MainModule.ImportReference (reflectionMethod);
+			//	noOptAttrArgType = assembly.MainModule.ImportReference (cecilInt16);
+
+			//	if (noOptAttr == null)
+			//		throw new Exception(String.Format("ImportReference failed on BCL type {0}", reflectionMethod));
+			//	if (noOptAttrArgType == null)
+			//		throw new Exception(String.Format("ImportReference failed on Int16"));
+			//}
+
+
+			// var reflectionAttr = new CustomAttribute (noOptAttr);
+			// reflectionAttr.ConstructorArguments.Add (new CustomAttributeArgument (noOptAttrArgType, Mono.Cecil.MethodImplAttributes.NoOptimization));
+
+			method.ImplAttributes |= MethodImplAttributes.NoOptimization;
+			// method.CustomAttributes.Add (reflectionAttr);
 		}
 	}
 }
