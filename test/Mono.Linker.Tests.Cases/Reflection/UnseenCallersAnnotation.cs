@@ -8,13 +8,10 @@ namespace Mono.Linker.Tests.Cases.Reflection
 	[SetupLinkerArgument("--annotate-unseen-callers")]
 	public class UnseenCallersAnnotation
 	{
-		static Type attrType;
-
-
 		public static void Main()
 		{
 			var typeA = typeof(A);
-			var method = typeA.GetMethod("Foo", BindingFlags.Public);
+			var method = typeA.GetMethod("Foo", BindingFlags.NonPublic);
 			method.Invoke(null, new object[] { });
 		}
 
@@ -23,7 +20,7 @@ namespace Mono.Linker.Tests.Cases.Reflection
 		{
 			[Kept]
 			[KeptAttributeAttribute("System.Runtime.CompilerServices.ReflectionBlockedAttribute")]
-			public int Foo()
+			private int Foo()
 			{
 				return 42;
 			}

@@ -5,12 +5,10 @@ using Mono.Cecil.Cil;
 using System.Runtime.CompilerServices;
 
 namespace Mono.Linker.Steps {
-	public class AccessAnnotatorStep : BaseStep
+	public class UnseenCallerAnnotateStep : BaseStep
 	{
 		AssemblyDefinition assembly;
-
 		MethodReference noOptAttr;
-		TypeReference noOptAttrArgType;
 
 		protected override void ProcessAssembly (AssemblyDefinition assembly)
 		{
@@ -47,42 +45,26 @@ namespace Mono.Linker.Steps {
 				return;
 
 			if (noOptAttr == null) {
-				TypeDefinition methodImpl = BCL.FindPredefinedType ("System.Runtime.CompilerServices", "MethodImplAttribute", Context);
-				TypeDefinition option = BCL.FindPredefinedType ("System.Runtime.CompilerServices", "MethodImplOptions", Context);
-				TypeDefinition cecilInt16 = BCL.FindPredefinedType ("System", "Int16", Context);
-
+				TypeDefinition methodImpl = BCL.FindPredefinedType("System.Runtime.CompilerServices", "ReflectionBlockedAttribute", Context);
 				MethodDefinition reflectionMethod = null;
-
-				foreach (var ref_method in methodImpl.Methods) {
+				foreach (var ref_method in methodImpl.Methods)
+				{
 					if (!ref_method.IsConstructor)
 						continue;
-					if (ref_method.Parameters.Count != 1)
+					if (ref_method.Parameters.Count != 0)
 						continue;
-					if (ref_method.Parameters[0].ParameterType == cecilInt16) {
-						reflectionMethod = ref_method;
-						break;
-					}
+					reflectionMethod = ref_method;
 				}
-
-				Annotations.Mark (reflectionMethod);
-				Annotations.MarkUnseenCallers (reflectionMethod);
-
-				if (reflectionMethod == null)
-					throw new Exception ("Could not find the Int16 constructor for MethodImplAttribute");
-
 				noOptAttr = assembly.MainModule.ImportReference (reflectionMethod);
-				noOptAttrArgType = assembly.MainModule.ImportReference (cecilInt16);
-
 				if (noOptAttr == null)
-					throw new Exception(String.Format("ImportReference failed on BCL type {0}", reflectionMethod));
-				if (noOptAttrArgType == null)
-					throw new Exception(String.Format("ImportReference failed on Int16"));
+					throw new Exception("Could not find System.Runtime.CompilerServices.ReflectionBlockedAttribute in BCL.");
 			}
+			var cattr = new CustomAttribute(noOptAttr);
+			method.CustomAttributes.Add (cattr);
 
-
-			var reflectionAttr = new CustomAttribute (noOptAttr);
-			reflectionAttr.ConstructorArguments.Add (new CustomAttributeArgument (noOptAttrArgType, Mono.Cecil.MethodImplAttributes.NoOptimization));
-			method.CustomAttributes.Add (reflectionAttr);
+			Annotations.Mark(cattr);
+			Annotations.Mark(cattr.AttributeType);
+			Annotations.Mark(cattr.Constructor);
 		}
 	}
 }

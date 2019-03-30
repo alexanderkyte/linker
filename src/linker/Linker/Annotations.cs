@@ -146,12 +146,12 @@ namespace Mono.Linker {
 		}
 
 
-		internal void MarkReflected (MethodDefinition method)
+		internal void MarkUnseenCallers (MethodDefinition method)
 		{
 			marked_reflected.Add (method);
 		}
 
-		public bool IsReflected (MethodDefinition method)
+		public bool HasUnseenCallers (MethodDefinition method)
 		{
 			return marked_reflected.Contains (method);
 		}

@@ -149,6 +149,9 @@ namespace Mono.Linker {
 
 		public CodeOptimizations DisabledOptimizations { get; set; }
 
+        public bool AnnotateUnseenCallers { get; set; }
+
+     
 		public LinkContext (Pipeline pipeline)
 			: this (pipeline, new AssemblyResolver ())
 		{

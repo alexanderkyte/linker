@@ -47,8 +47,8 @@ namespace Mono.Linker.Steps {
 
 		void RewriteBodyToLinkedAway (MethodDefinition method)
 		{
-			method.ImplAttributes &= ~(MethodImplAttributes.AggressiveInlining | MethodImplAttributes.Synchronized);
-			method.ImplAttributes |= MethodImplAttributes.NoInlining;
+			// method.ImplAttributes &= ~(MethodImplAttributes.AggressiveInlining | MethodImplAttributes.Synchronized);
+			// method.ImplAttributes |= MethodImplAttributes.NoInlining;
 
 			method.Body = CreateThrowLinkedAwayBody (method);
 			ClearDebugInformation (method);

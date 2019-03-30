@@ -160,8 +160,7 @@ namespace Mono.Linker {
 				bool dumpDependencies = false;
 				bool ignoreDescriptors = false;
 				bool removeCAS = true;
-				var annotateUnseenCallers = false;
-
+				
 				bool resolver = false;
 				while (HaveMoreTokens ()) {
 					string token = GetParam ();
@@ -220,7 +219,7 @@ namespace Mono.Linker {
 							continue;
 
 						case "--annotate-unseen-callers":
-							annotateUnseenCallers = true;
+							context.AnnotateUnseenCallers = true;
 							continue;
 
 						case "--custom-step":
@@ -333,8 +332,8 @@ namespace Mono.Linker {
 				foreach (string custom_step in custom_steps)
 					AddCustomStep (p, custom_step);
 
-				if (annotateAccesses)
-					p.AddStepAfter (typeof (CodeRewriterStep), new AccessAnnotatorStep ());
+				if (context.AnnotateUnseenCallers)
+					p.AddStepAfter (typeof (MarkStep), new UnseenCallerAnnotateStep ());
 
 				p.AddStepAfter (typeof (LoadReferencesStep), new LoadI18nAssemblies (assemblies));
 
